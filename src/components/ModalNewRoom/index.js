@@ -2,9 +2,63 @@ import React, { useState } from "react";
 
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 
-function ModalNewRoom({ setVisible }) {
+import auth from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore'
 
-    const [roomName, setRoomName] = useState('')
+function ModalNewRoom({ setVisible, setUpdateScreen }) {
+
+    const [roomName, setRoomName] = useState("")
+
+    const user = auth().currentUser.toJSON()
+
+    function handleButtonCreate() {
+        if (roomName === '') return;
+
+        //Deixar apenas criar apenas [4] salas
+        firestore().collection('MESSAGE_THREADS')
+            .get()
+            .then((snapshot) => {
+                let myRoom = 0
+
+                snapshot.docs.map(docItem => {
+                    if (docItem.data().owner === user.uid) {
+                        myRoom = myRoom + 1
+                    }
+                })
+                if (myRoom >= 2) {
+                    alert('O limite de salas criadas já foi ultrapassado!')
+                } else {
+                    createRoom()
+                }
+            })
+
+    }
+    //criar nova sala no banco//
+    function createRoom() {
+        firestore()
+            .collection('MESSAGE_THREADS')
+            .add({
+                name: roomName,
+                owner: user.uid,
+                lastMessage: {
+                    text: `Grupo ${roomName} criado. Bem vindo(a)!`,
+                    createdAt: firestore.FieldValue.serverTimestamp()
+                }
+            })
+            .then((docRef) => {
+                docRef.collection('MESSAGES').add({
+                    text: `Grupo ${roomName} criado. Bem vindo(a)!`,
+                    createdAt: firestore.FieldValue.serverTimestamp(),
+                    system: true
+                })
+                    .then(() => {
+                        setVisible()
+                        setUpdateScreen()
+                    })
+            })
+            .catch((err) => { console.log(err) })
+    }
+
 
     return (
         <View style={styles.container}>
@@ -12,14 +66,17 @@ function ModalNewRoom({ setVisible }) {
                 <View style={styles.modal}></View>
             </TouchableWithoutFeedback>
             <View style={styles.modalContent}>
-                <Text style={styles.title}>Criar um novo grupo?</Text>
+                <Text style={styles.title}>Criar uma nova sala?</Text>
                 <TextInput
                     style={styles.input}
                     value={roomName}
-                    onchangeText={(text) => setRoomName(text)}
+                    onChangeText={(text) => setRoomName(text)}
                     placeholder="Nome para sua sala"
                 />
-                <TouchableOpacity style={styles.buttonCreate}>
+                <TouchableOpacity
+                    style={styles.buttonCreate}
+                    onPress={handleButtonCreate}
+                >
                     <Text style={styles.buttonText}>Criar sala</Text>
                 </TouchableOpacity>
             </View>
@@ -59,7 +116,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         height: 45,
         backgroundColor: '#2e54d4',
-        alignItems :'center',
+        alignItems: 'center',
         justifyContent: 'center'
     },
     buttonText: {
