@@ -1,13 +1,55 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, Platform } from 'react-native'
 
+import auth from '@react-native-firebase/auth'
+import {useNavigation} from '@react-navigation/native'
+
 const SignIn = () => {
+
+  const navigation = useNavigation()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const [type, setType] = useState(false) // ? tela de cadastro : tela de login
+
+  function handleLogin(){
+    if(type){
+      //cadastrar novo usuario
+      if(name === '' || email === '' || password === '' ) return;
+
+      auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((user) => {
+        user.user.updateProfile({
+          displayName: name
+        })
+        .then(() => {
+          navigation.goBack()
+        })
+      })
+      .catch((error) => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('Email já em uso!');
+        }
+        if (error.code === 'auth/invalid-email') {
+          console.log('Email inválido!');
+        }
+      })
+    }else{
+      //logar usuario cadastrado
+      auth().signInWithEmailAndPassword(email, password)
+      .then(() => {
+        navigation.goBack()
+      })
+      .catch((error) => {
+        if (error.code === 'auth/invalid-email') {
+          console.log('Email inválido!');
+        }
+    })
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,10 +77,14 @@ const SignIn = () => {
         style={styles.input}
         value={password}
         onChangeText={(text) => setPassword(text)}
-        placeholder="Qual sua senha??"
+        placeholder="Qual sua senha?"
         placeholderTextColor="#99999B"
+        secureTextEntry={true}  
       />
-      <TouchableOpacity style={[styles.buttonLogin, {backgroundColor: type? '#f53745' : '#57dd86'}]}>
+      <TouchableOpacity
+      style={[styles.buttonLogin, {backgroundColor: type? '#f53745' : '#57dd86'}]}
+      onPress={handleLogin}
+      >
         <Text style={styles.buttonText}>
           {type ? 'Cadastrar' : 'Acessar'}
         </Text>
