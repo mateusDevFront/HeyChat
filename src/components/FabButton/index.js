@@ -2,20 +2,25 @@ import React from "react";
 
 import {
     View,
-    Text,StyleSheet,
+    Text, StyleSheet,
     TouchableOpacity
 } from 'react-native'
 
-function FabButton({setVisible}){
-    function handleNavigateButton(){
-        setVisible()
+import { useNavigation } from '@react-navigation/native'
+
+function FabButton({ setVisible, userStatus }) {
+
+    const navigation = useNavigation()
+
+    function handleNavigateButton() {
+        userStatus ? setVisible() : navigation.navigate('SignIn')
     }
 
-    return(
+    return (
         <TouchableOpacity
-        style={styles.containerButton}
-        activeOpacity={0.9}
-        onPress={handleNavigateButton}
+            style={styles.containerButton}
+            activeOpacity={0.9}
+            onPress={handleNavigateButton}
         >
             <View>
                 <Text style={styles.buttonText}>+</Text>
@@ -26,7 +31,7 @@ function FabButton({setVisible}){
 export default FabButton;
 
 const styles = StyleSheet.create({
-    containerButton:{
+    containerButton: {
         backgroundColor: '#2e54d4',
         width: 60,
         height: 60,
@@ -40,6 +45,6 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 28,
         color: '#fff',
-        fontWeight:'bold'
+        fontWeight: 'bold'
     }
 })

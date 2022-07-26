@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 
 import auth from "@react-native-firebase/auth"
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation, useIsFocused } from "@react-navigation/native"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 import FabButton from '../../components/FabButton'
@@ -20,13 +20,25 @@ import ModalNewRoom from '../../components/ModalNewRoom'
 const ChatRoom = () => {
 
   const navigation = useNavigation()
+  const isFocused = useIsFocused()
 
   const [modal, setModal] = useState(false)
+  const [user, setUser] = useState(null)
+
+
+  useEffect(() => {
+    const hasUser = auth().currentUser ? auth().currentUser.toJSON() : null;
+    console.log('has', hasUser)
+    setUser(hasUser)
+
+  }, [isFocused])
+
 
   function handleSignOut() {
     auth()
       .signOut()
       .then(() => {
+        setUser(null)
         navigation.navigate('SignIn')
       })
       .catch(() => {
@@ -38,9 +50,13 @@ const ChatRoom = () => {
       <View style={styles.headerRoom}>
 
         <View style={styles.headerRoomLeft}>
-          <TouchableOpacity onPress={handleSignOut}>
-            <MaterialIcons name="arrow-back" size={28} color="#fff" />
-          </TouchableOpacity>
+
+          {user && (
+            <TouchableOpacity onPress={handleSignOut}>
+              <MaterialIcons name="arrow-back" size={28} color="#fff" />
+            </TouchableOpacity>
+          )}
+
           <Text style={styles.title}>Grupos</Text>
         </View>
 
@@ -50,10 +66,13 @@ const ChatRoom = () => {
 
       </View>
 
-      <FabButton setVisible={() => setModal(true)} />
+      <FabButton
+        setVisible={() => setModal(true)}
+        userStatus={user}
+      />
 
       <Modal visible={modal} animationType="slide" transparent={true}>
-        <ModalNewRoom setVisible={() => setModal(false)}/>
+        <ModalNewRoom setVisible={() => setModal(false)} />
       </Modal>
 
     </SafeAreaView>
