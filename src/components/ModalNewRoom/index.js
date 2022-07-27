@@ -25,7 +25,7 @@ function ModalNewRoom({ setVisible, setUpdateScreen }) {
                         myRoom = myRoom + 1
                     }
                 })
-                if (myRoom >= 2) {
+                if (myRoom >= 4) {
                     alert('O limite de salas criadas já foi ultrapassado!')
                 } else {
                     createRoom()

@@ -70,8 +70,7 @@ const ChatRoom = () => {
       isActive = false
     }
   }, [isFocused, updateScreen])
-
-
+  
   function handleSignOut() {
     auth()
       .signOut()
@@ -146,7 +145,7 @@ const ChatRoom = () => {
       keyExtractor={item => item._id}
       showsVerticalScrollIndicator={false}
       renderItem={({item}) => (
-        <ChatList data={item} deleteRoom={() => deleteRoom(item.owner, item._id)} />
+        <ChatList data={item} deleteRoom={() => deleteRoom(item.owner, item._id)} userStatus={user} />
       )}
       />
 
