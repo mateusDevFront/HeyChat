@@ -14,7 +14,7 @@ function AppRoutes(){
             name="SignIn"
             component={SignIn}
             options={{
-                title: "Faça Login"
+                headerShown: false
             }}
             />
             <AppStack.Screen
@@ -28,7 +28,8 @@ function AppRoutes(){
             name="Messages"
             component={Messages}
             options={({route}) => ({
-                title: 'Chat: ' + route.params?.thread.name
+                headerShown: false
+                /* title: 'Chat: ' + route.params?.thread.name */
             })}
             />
         </AppStack.Navigator>

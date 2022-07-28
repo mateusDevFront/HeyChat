@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native'
 
 import auth from '@react-native-firebase/auth';
 
-function ChatMessage({ data }) {
+function ChatMessage({ data, route }) {
 
     const user = auth().currentUser.toJSON()
 
@@ -17,7 +17,7 @@ function ChatMessage({ data }) {
             <View style={[
                 styles.messageBox,
                 {
-                    backgroundColor: isMyMessage ? '#dcf8c5' : '#fff',
+                    backgroundColor: isMyMessage ? '#ddf9c1' : '#fff',
                     marginLeft: isMyMessage ? 50 : 0,
                     marginRight: isMyMessage ? 0 : 50
                 }
@@ -36,16 +36,17 @@ export default ChatMessage
 
 const styles = StyleSheet.create({
     container: {
-        padding: 8
+        padding: 8,
     },
     messageBox: {
         borderRadius: 5,
         padding: 10,
     },
     name: {
-        color: '#f53745',
+        color: '#E47004',
         fontWeight: 'bold',
         marginBottom: 5
     },
-    message: {}
+    message: {
+    }
 })

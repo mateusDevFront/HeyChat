@@ -1,8 +1,19 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, Platform } from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+  Platform,
+  ActivityIndicator
+} from 'react-native'
 
 import auth from '@react-native-firebase/auth'
-import {useNavigation} from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
+
+import Header from '../../components/Header'
 
 const SignIn = () => {
 
@@ -12,64 +23,61 @@ const SignIn = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [loading, setLoading] = useState(true)
+  const [loadingAuth, setLoadingAuth] = useState(false)
+
   const [type, setType] = useState(false) // ? tela de cadastro : tela de login
 
-  function handleLogin(){
-    if(type){
+  function handleLogin() {
+    if (type) {
       //cadastrar novo usuario
-      if(name === '' || email === '' || password === '' ) return;
-
+      if (name === '' || email === '' || password === '') return;
+      setLoadingAuth(true)
       auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((user) => {
-        user.user.updateProfile({
-          displayName: name
+        .createUserWithEmailAndPassword(email, password)
+        .then((user) => {
+          user.user.updateProfile({
+            displayName: name
+          })
+            .then(() => {
+              navigation.goBack()
+            })
+          setLoadingAuth(false)
         })
+        .catch((error) => {
+          setLoadingAuth(false)
+        })
+    } else {
+      //logar usuario cadastrado
+      setLoadingAuth(true)
+      auth().signInWithEmailAndPassword(email, password)
         .then(() => {
           navigation.goBack()
         })
-      })
-      .catch((error) => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('Email já em uso!');
-        }
-        if (error.code === 'auth/invalid-email') {
-          console.log('Email inválido!');
-        }
-      })
-    }else{
-      //logar usuario cadastrado
-      auth().signInWithEmailAndPassword(email, password)
-      .then(() => {
-        navigation.goBack()
-      })
-      .catch((error) => {
-        if (error.code === 'auth/invalid-email') {
-          console.log('Email inválido!');
-        }
-    })
+      setLoadingAuth(false)
     }
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.logo}>HeyChat's</Text>
-      <Text style={{ marginBottom: 20 }}>Faça Networking</Text>
+      <Header title="Login" color="#fff" />
+      <Text style={styles.logo}>HeyChat</Text>
+      <Text style={{ marginBottom: 100 }}>Crie Networking com outros dev's</Text>
 
-      { type && (
+      {type && (
         <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={(text) => setName(text)}
-        placeholder="Qual seu nome?"
-        placeholderTextColor="#99999B"
-      />
+          style={styles.input}
+          value={name}
+          onChangeText={(text) => setName(text)}
+          placeholder="Primeiro nome"
+          placeholderTextColor="#99999B"
+        />
       )}
       <TextInput
         style={styles.input}
         value={email}
         onChangeText={(text) => setEmail(text)}
-        placeholder="Qual seu email?"
+        placeholder="E-mail"
         placeholderTextColor="#99999B"
       />
 
@@ -77,21 +85,26 @@ const SignIn = () => {
         style={styles.input}
         value={password}
         onChangeText={(text) => setPassword(text)}
-        placeholder="Qual sua senha?"
+        placeholder="Senha"
         placeholderTextColor="#99999B"
-        secureTextEntry={true}  
+        secureTextEntry={true}
       />
       <TouchableOpacity
-      style={[styles.buttonLogin, {backgroundColor: type? '#f53745' : '#57dd86'}]}
-      onPress={handleLogin}
+        style={[styles.buttonLogin, { backgroundColor: type ? '#E47004' : '#E47004' }]}
+        onPress={handleLogin}
       >
-        <Text style={styles.buttonText}>
-          {type ? 'Cadastrar' : 'Acessar'}
-        </Text>
+        {loadingAuth ? (
+          <ActivityIndicator size={20} color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>
+            {type ? 'Cadastrar' : 'Acessar'}
+          </Text>
+        )}
       </TouchableOpacity>
-      <TouchableOpacity onPress={ () => setType(!type)}>
+      <TouchableOpacity
+        onPress={() => setType(!type)}>
         <Text>
-          {type ? 'Já possuo uma conta' : 'Criar uma nova conta'}
+          {type ? 'Já possui uma conta? Faça login!' : 'Deseja criar uma nova conta?'}
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -107,8 +120,9 @@ const styles = StyleSheet.create({
   },
   logo: {
     marginTop: Platform.OS === 'android' ? 55 : 80,
-    fontSize: 28,
-    fontWeight: 'bold'
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#E47004'
   },
   input: {
     color: '#121212',

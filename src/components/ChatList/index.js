@@ -37,11 +37,11 @@ export default ChatList
 const styles = StyleSheet.create({
     row: {
         paddingHorizontal: 10,
-        paddingVertical: 15,
+        paddingVertical: 20,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(241, 240, 245, 0.5)',
-        marginVertical: 4
+        backgroundColor: '#fff',
+        marginVertical: 5
     },
     content: {
         flexShrink: 1
@@ -50,13 +50,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     contentText: {
-        color: '#c1c1c1',
-        fontSize: 16,
+        color: '#C7C7C7',
+        fontSize: 14,
         marginTop: 2
     },
     nameText: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
-        color: '#000'
+        color: '#606060'
     }
 })

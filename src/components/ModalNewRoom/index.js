@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Alert,
+    ActivityIndicator
+} from 'react-native'
 
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
@@ -9,11 +18,14 @@ function ModalNewRoom({ setVisible, setUpdateScreen }) {
 
     const [roomName, setRoomName] = useState("")
 
+    const [loading, setLoading] = useState(true)
+    const [loadingAuth, setLoadingAuth] = useState(false)
+
     const user = auth().currentUser.toJSON()
 
     function handleButtonCreate() {
         if (roomName === '') return;
-
+        setLoadingAuth(true)
         //Deixar apenas criar apenas [4] salas
         firestore().collection('MESSAGE_THREADS')
             .get()
@@ -25,13 +37,23 @@ function ModalNewRoom({ setVisible, setUpdateScreen }) {
                         myRoom = myRoom + 1
                     }
                 })
-                if (myRoom >= 4) {
-                    alert('O limite de salas criadas já foi ultrapassado!')
+                if (myRoom >= 3) {
+                    Alert.alert(
+                        "Ops!",
+                        "Você já obteve o limíte máximo de salas criadas (3)",
+                        [
+
+                            {
+                                text: 'Sair',
+                                onPress: () => { }
+                            }
+                        ]
+                    )
                 } else {
                     createRoom()
                 }
+                setLoadingAuth(false)
             })
-
     }
     //criar nova sala no banco//
     function createRoom() {
@@ -41,13 +63,13 @@ function ModalNewRoom({ setVisible, setUpdateScreen }) {
                 name: roomName,
                 owner: user.uid,
                 lastMessage: {
-                    text: `Grupo ${roomName} criado. Bem vindo(a)!`,
+                    text: `Bate Papo  "${roomName}" criado. Seja Bem vindo(a)!`,
                     createdAt: firestore.FieldValue.serverTimestamp()
                 }
             })
             .then((docRef) => {
                 docRef.collection('MESSAGES').add({
-                    text: `Grupo ${roomName} criado. Bem vindo(a)!`,
+                    text: `Bate Papo ${roomName} criado. Seja Bem vindo(a)!`,
                     createdAt: firestore.FieldValue.serverTimestamp(),
                     system: true
                 })
@@ -66,18 +88,22 @@ function ModalNewRoom({ setVisible, setUpdateScreen }) {
                 <View style={styles.modal}></View>
             </TouchableWithoutFeedback>
             <View style={styles.modalContent}>
-                <Text style={styles.title}>Criar uma nova sala?</Text>
+                <Text style={styles.title}>Deseja criar um {'\n'}novo chat?</Text>
                 <TextInput
                     style={styles.input}
                     value={roomName}
                     onChangeText={(text) => setRoomName(text)}
-                    placeholder="Nome para sua sala"
+                    placeholder="Nome do chat"
                 />
                 <TouchableOpacity
                     style={styles.buttonCreate}
                     onPress={handleButtonCreate}
                 >
-                    <Text style={styles.buttonText}>Criar sala</Text>
+                    {loadingAuth ? (
+                        <ActivityIndicator size={20} color="#fff" />
+                    ) : (
+                        <Text style={styles.buttonText}>Criar sala</Text>
+                    )}
                 </TouchableOpacity>
             </View>
         </View>
@@ -99,10 +125,10 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     title: {
-        marginTop: 14,
-        textAlign: 'center',
+        color: '#E47004',
+        marginTop: 20,
         fontWeight: 'bold',
-        fontSize: 19
+        fontSize: 22
     },
     input: {
         borderRadius: 4,
@@ -110,12 +136,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#ddd',
         marginVertical: 15,
         fontSize: 16,
-        paddingHorizontal: 5
+        paddingHorizontal: 15,
     },
     buttonCreate: {
         borderRadius: 4,
         height: 45,
-        backgroundColor: '#2e54d4',
+        backgroundColor: '#E47004',
         alignItems: 'center',
         justifyContent: 'center'
     },

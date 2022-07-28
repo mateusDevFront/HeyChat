@@ -70,7 +70,7 @@ const ChatRoom = () => {
       isActive = false
     }
   }, [isFocused, updateScreen])
-  
+
   function handleSignOut() {
     auth()
       .signOut()
@@ -84,17 +84,17 @@ const ChatRoom = () => {
   }
 
   //deletar uma sala criada//
-  function deleteRoom(ownerId, idRoom){
+  function deleteRoom(ownerId, idRoom) {
     /* console.log('deletado') */
-    if(ownerId !== user?.uid) return;
-    
+    if (ownerId !== user?.uid) return;
+
     Alert.alert(
       "ATENÇÃO!!!",
-      "Tem certeza que deseja deletar essa sala?",
+      "Tem certeza que deseja deletar esse chat?",
       [
         {
           text: 'Cancelar',
-          onPress: () => {},
+          onPress: () => { },
           style: 'cancel'
         },
         {
@@ -105,12 +105,12 @@ const ChatRoom = () => {
     )
   }
 
-  async function handleDeleteRoom(idRoom){
+  async function handleDeleteRoom(idRoom) {
     /* console.log(idRoom) */
     await firestore()
-    .collection('MESSAGE_THREADS')
-    .doc(idRoom)
-    .delete()
+      .collection('MESSAGE_THREADS')
+      .doc(idRoom)
+      .delete()
     setUpdateScreen(!updateScreen)
   }
 
@@ -124,29 +124,23 @@ const ChatRoom = () => {
       <View style={styles.headerRoom}>
 
         <View style={styles.headerRoomLeft}>
-
-          {user && (
-            <TouchableOpacity onPress={handleSignOut}>
-              <MaterialIcons name="arrow-back" size={28} color="#fff" />
-            </TouchableOpacity>
-          )}
-
-          <Text style={styles.title}>Grupos</Text>
+          <Text style={styles.title}>Chat's</Text>
         </View>
 
-        <TouchableOpacity>
-          <MaterialIcons name="search" size={29} color="#fff" />
-        </TouchableOpacity>
-
+        {user && (
+          <TouchableOpacity onPress={handleSignOut}>
+            <MaterialIcons name="logout" size={30} color="#E47004" />
+          </TouchableOpacity>
+        )}
       </View>
 
       <FlatList
-      data={threads}
-      keyExtractor={item => item._id}
-      showsVerticalScrollIndicator={false}
-      renderItem={({item}) => (
-        <ChatList data={item} deleteRoom={() => deleteRoom(item.owner, item._id)} userStatus={user} />
-      )}
+        data={threads}
+        keyExtractor={item => item._id}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <ChatList data={item} deleteRoom={() => deleteRoom(item.owner, item._id)} userStatus={user} />
+        )}
       />
 
       <FabButton
@@ -156,8 +150,8 @@ const ChatRoom = () => {
 
       <Modal visible={modal} animationType="slide" transparent={true}>
         <ModalNewRoom
-        setVisible={() => setModal(false)}
-        setUpdateScreen={() => setUpdateScreen(!updateScreen)}
+          setVisible={() => setModal(false)}
+          setUpdateScreen={() => setUpdateScreen(!updateScreen)}
         />
       </Modal>
 
@@ -169,7 +163,7 @@ export default ChatRoom
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#F0F0F0'
   },
   headerRoom: {
     flexDirection: 'row',
@@ -177,7 +171,6 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 20,
     paddingHorizontal: 10,
-    backgroundColor: '#2e54d4',
     borderBottomRightRadius: 15,
     borderBottomLeftRadius: 15
   },
@@ -188,7 +181,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#fff',
-    paddingLeft: 10
+    color: '#E47004',
   }
 })

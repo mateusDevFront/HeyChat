@@ -17,6 +17,7 @@ import firestore from '@react-native-firebase/firestore'
 import Feather from 'react-native-vector-icons/Feather'
 
 import ChatMessage from '../../components/ChatMessage'
+import Header from '../../components/Header'
 
 const Messages = ({ route }) => {
 
@@ -90,6 +91,7 @@ const Messages = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header title={'Chat: ' + route.params?.thread.name} color="#fff"/>
       <FlatList
         style={{ width: '100%' }}
         data={messages}
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
     minHeight: 38
   },
   buttonContainer: {
-    backgroundColor: '#51c880',
+    backgroundColor: '#E47004',
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',

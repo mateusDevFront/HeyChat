@@ -32,7 +32,7 @@ export default FabButton;
 
 const styles = StyleSheet.create({
     containerButton: {
-        backgroundColor: '#2e54d4',
+        backgroundColor: '#04B05D',
         width: 60,
         height: 60,
         borderRadius: 30,
