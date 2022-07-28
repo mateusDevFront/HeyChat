@@ -3,9 +3,6 @@
 
 Aplicativo de Bate-Papo para desenvolvedores tirarem dúvidas em TEMPO REAL!
 
-
-## Screenshots
-
 ![App Screenshot](https://i.imgur.com/O123sqK.png)
 
 
